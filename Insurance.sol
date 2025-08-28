@@ -15,6 +15,7 @@ contract Insurance {
     }
 
     struct Flight {
+        string flightTo;
         uint256 flightId;
         uint256 ticketPrice;
         uint256 startTime;
@@ -25,23 +26,23 @@ contract Insurance {
 
     address owner;
     uint256 policiesCount;
-    uint256 flightsCount;
+    uint256 public flightsCount;
 
     constructor() {
         owner = msg.sender;
     }
 
-    function addFlight (uint256 _ticketPrice, uint _startTime) public {
+    function addFlight (string memory _flightTo, uint256 _ticketPrice, uint _startTime) public {
         require(msg.sender == owner, "Only the owner of this contract can call this function");
         
         flightsCount++;
-        flights[flightsCount] = Flight(flightsCount, _ticketPrice, _startTime);
+        flights[flightsCount] = Flight(_flightTo, flightsCount, _ticketPrice, _startTime);
     }
 
     function purchasePolicy(uint256 _flightId) public payable {
         require(_flightId > 0 && _flightId <= flightsCount, "This flight does not exist");
         require(block.timestamp < flights[_flightId].startTime, "This flight already departed");
-        require(msg.value == 1 ether, "Pay the exact price of the policy");
+        require(msg.value == 0.0001 ether, "Pay the exact price of the policy");
         
         policiesCount++;
         policies[policiesCount] = Policy(_flightId, 1 ether, msg.sender, false);
