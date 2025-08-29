@@ -1,3 +1,7 @@
+// TO DO-> melhorar frontend
+//      -> todos os clientes que compraram insurance para aquele especifico voo, assim que passar 30min depois do voo todos recebem
+//      -> confirmar que cliente recebe pagamento quando vai reclamar o pagamento
+
 // get contract address and ABI
 const contractAddress = "0x0a8F7b9b8D350baF3Dd2B69520Ed1C45F7529737";
 const contractABI = [

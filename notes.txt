@@ -1,0 +1,14 @@
+// Smart Contract
+->São logo definidos 3 voos (destino, start time, preço) no constructor
+->Define-se logo que o tempo de insurance para todos os voos são 30 minutos
+->Não precisamos de admin
+->O Client: pode ver quantos voos há, quais os detalhes do voos
+            pode comprar seguro para um voo, e depois ver o saldo da sua carteira para conferir se já foi pago, e ver também o estado do seu seguro(quanto pagou, se já recebeu e para que voo foi)
+
+
+// Frontend
+->Connect wallet
+->Client: pode ver quantos e quais voos estão disponiveis
+          pode comprar tickets para o voo, e comprar insurance para o voo se tiver ticket comprado para esse voo
+          vai receber o dinheiro assim que o tempo passar
+          pode ver o estado do seu seguro

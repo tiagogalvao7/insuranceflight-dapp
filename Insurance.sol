@@ -5,14 +5,7 @@ pragma solidity ^0.8.18;
 // users can purchase an insurance policy for a specific flight
 // if the flight is delayed beyond a certain period, the contract automatically pays them
 
-contract Insurance {
-
-    struct Policy {
-        uint256 flightId;
-        uint256 payoutAmount;
-        address policyHolder;
-        bool isPaidOut;
-    }
+contract FlightInsurance {
 
     struct Flight {
         string flightTo;
@@ -21,58 +14,76 @@ contract Insurance {
         uint256 startTime;
     }
 
-    mapping(uint => Policy) public policies;
-    mapping(uint => Flight) public flights;
+    struct Insurance {
+        uint256 flightId;
+        uint256 amountPaid;
+        bool isActive;
+        bool isClaimed;
+    }
 
-    address owner;
-    uint256 policiesCount;
-    uint256 public flightsCount;
+    mapping(uint256 => Flight) public flights;
+    mapping(address => uint256) public tickets;     // each address can only have 1 ticket per flight
+    mapping(address => Insurance) public insurances;
+
+    uint256 public constant INSURANCE_TIME = 30 minutes;
+    uint256 public constant INSURANCE_PRICE = 0.00005 ether;
+    uint256 public flightsCount = 0;
 
     constructor() {
-        owner = msg.sender;
+        flightsCount = 3;
+
+        flights[1] = Flight("Madrid", 1, 0.0001 ether, block.timestamp + 1 hours);
+        flights[2] = Flight("Paris", 2, 0.0001 ether, block.timestamp + 2 hours);
+        flights[3] = Flight("London", 3, 0.0001 ether, block.timestamp + 3 hours);
     }
 
-    function addFlight (string memory _flightTo, uint256 _ticketPrice, uint _startTime) public {
-        require(msg.sender == owner, "Only the owner of this contract can call this function");
-        
-        flightsCount++;
-        flights[flightsCount] = Flight(_flightTo, flightsCount, _ticketPrice, _startTime);
-    }
-
-    function purchasePolicy(uint256 _flightId) public payable {
-        require(_flightId > 0 && _flightId <= flightsCount, "This flight does not exist");
+    // client buy ticket
+    function buyTicket (uint256 _flightId) external payable {
+        require(_flightId>0 && _flightId<=flightsCount, "This flight does not exist");
         require(block.timestamp < flights[_flightId].startTime, "This flight already departed");
-        require(msg.value == 0.0001 ether, "Pay the exact price of the policy");
-        
-        policiesCount++;
-        policies[policiesCount] = Policy(_flightId, 1 ether, msg.sender, false);
+        require(msg.value == flights[_flightId].ticketPrice, "Pay exactly the amount of ticket");
+        require(tickets[msg.sender] == 0, "You already have a ticket for this flight");
+
+        tickets[msg.sender] = _flightId;
     }
 
-    function triggerPayout(uint256 _policyId, uint256 _delayInMinutes) external {
-        // 1. Check if the caller is the owner
-        require(msg.sender == owner, "Only owner of the contract can call this function");
-        // 2. Check if the policy exists
-        require(_policyId > 0 && _policyId <= policiesCount, "This policy does not exist");
-        // 3. Check if the payout has already been triggered for this policy
-        require(policies[_policyId].isPaidOut == false, "Payout already triggered for this policy");
-        // 4. Check for the delay (15 minutes = 900 seconds)
-        require(_delayInMinutes >= 900, "Delay must be greater than 15 minutes");
-        
-        policies[_policyId].isPaidOut = true;
+    // client buy insurance if already has bought flight ticket
+    function buyInsurance (uint256 _flightId) external payable {
+        require(_flightId>0 && _flightId<=flightsCount, "This flight does not exist");
+        require(tickets[msg.sender] == _flightId, "You need to have 1 ticket for this flight");
+        require(msg.value == INSURANCE_PRICE, "Pay the exactly price of the insurance");
+        require(insurances[msg.sender].isActive, "You already purchase this insurance");
+
+        insurances[msg.sender] = Insurance(_flightId, INSURANCE_PRICE, true, false);
     }
 
-    function claimPayout(uint256 _policyId) public {
-        require(msg.sender == policies[_policyId].policyHolder, "Only owner of this policy can claim this money");
-        require(policies[_policyId].isPaidOut == true, "This payment is not already allowed");
-        require(policies[_policyId].payoutAmount > 0, "Payout already claimed");
-        
-        // get the amountfrom the policy struct
-        uint256 amount = policies[_policyId].payoutAmount;
-        
-        // reset the Payout amount
-        policies[_policyId].payoutAmount = 0;
+    // client claim insurance after 30 minutes of delay
+    function claimInsurance () external {
+        Insurance storage insurance = insurances[msg.sender];
+        require(insurance.isActive, "You dont have any insurance purchased to claim");
+        require(!insurance.isClaimed, "You already claimed this insurance value");
 
-        // transfer the funds
-        payable(msg.sender).transfer(amount);
+        Flight memory flight = flights[insurance.flightId];
+        require(block.timestamp >= flight.startTime + INSURANCE_TIME, "Flight not delayed time necessary to claim insurance");
+
+        insurance.isClaimed = true;
+        payable(msg.sender).transfer(insurance.amountPaid);
+    }
+
+    // see the state of the insurance
+    // memory keyword to return a temporary copy of the data storage
+    function getInsuranceStatus (address _user) external view returns (Insurance memory) {
+        return insurances[_user];
+    }
+
+    // see details of certain flight
+    // memory keyword to return a temporary copy of the data storage
+    function getFlightDetails (uint256 _flightId) external view returns (Flight memory) {
+        return flights[_flightId];
     }
 }
+
+
+// storage → permanent data in the blockchain.
+// memory → temporary data, used only within the execution of the function (or to return structs/arrays).
+// 
