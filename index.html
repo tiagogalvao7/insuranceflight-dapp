@@ -6,84 +6,74 @@
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Insurance Smart Contract</title>
-   <link rel="stylesheet" href="style.css"> <!-- Ensure this path is correct -->
+   <link rel="stylesheet" href="style.css">
    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"
       type="application/javascript"></script>
 </head>
 
 <body>
    <div class="container">
-      <h1>Insurance Smart Contract Interface</h1>
+      <h1 class="main-title">✈️ Flight Insurance DApp</h1>
 
       <!-- Connect to Metamask Button -->
-      <button id="connectButton">Connect wallet</button>
-      <p id="walletAddress"></p>
-
-      <!-- Section of admin functionalities -->
-      <section class="admin-section">
-         <h1>Admin Area</h1>
-         <div class="admin-forms">
-            <div class="flightsubmission">
-               <form>
-                  <fieldset>
-                     <label for="flightTo">Flight to: </label><br>
-                     <input type="text" id="flightTo" name="flightTo"><br>
-      
-                     <label for="ticketPrice">Ticket Price: </label><br>
-                     <input type="number" id="ticketPrice" name="ticketPrice"><br>
-      
-                     <label for="startTime">Start time: </label><br>
-                     <input type="time" id="startTime" name="startTime"><br>
-      
-                     <input type="submit" id="submitFlight" value="Submit Flight">
-                  </fieldset>
-               </form>
-            </div>
-      
-            <div class="triggerPolicy">
-               <form>
-                  <fieldset>
-                     <label for="policyID">Policy Id:</label><br>
-                     <input type="number" id="policyId" placeholder="Insert PolicyId"><br>
-                     <input type="submit" id="triggerPolicyButton" value="Trigger Policy">
-                  </fieldset>
-               </form>
-            </div>
-         </div>
-      </section>
-
+      <div class="wallet-section">
+         <button id="connectWalletButton">🔗 Connect Wallet</button>
+         <p id="walletAddress"></p>
+      </div>
 
       <!-- Section of client functionalities -->
       <section class="user-section">
-         <h1>Client Area</h1>
+         <h2>Client Area</h2>
+
          <div class="client-forms">
-            <div class="flights-subsection">
-               <button id="getTotalFlightsButton">Number of flights available</button>
+
+            <!-- Flights Info -->
+            <div class="card">
+               <h3>Available Flights</h3>
+               <button id="getTotalFlightsButton">📋 Show Total Flights</button>
                <p id="totalFlightsCount"></p>
-               
-               <label for="flightIdInput">Flight ID</label><br>
-               <input type="number" id="flightIdInput" placeholder="Insert Flight ID"><br>
-               <button id="getFlightDetailsButton">Get details of the flight</button>
+
+               <label for="flightIdInput">Enter Flight ID:</label>
+               <input type="number" id="flightIdInput" placeholder="Insert Flight ID">
+               <button id="getFlightDetailsButton">🔍 Get Flight Details</button>
                <div id="flightDetails"></div>
-            </div>
-            <div class="insurance-subsection">
-               <h2>Buy Insurance</h2>
-               <label for="policyFlightIdInput">Flight ID</label><br>
-               <input type="number" id="policyFlightIdInput" placeholder="Insert Flight ID"><br>
-               <button id="purchasePolicyButton">Buy Insurance</button>
-               
-               <h2>Claim Insurance</h2>
-               <label for="policyId">Flight ID</label><br>
-               <input type="number" id="policyFlightIdInput" placeholder="Insert Flight ID"><br>
-               <button id="purchasePolicyButton">Buy Insurance</button>
 
-
+               <label for="purchaseTicketFlightIdInput">Choose flight to buy:</label>
+               <input type="number" id="purchaseTicketFlightIdInput" placeholder="Insert Flight ID">
+               <button id="purchaseTicketButton">💰 Buy this flight</button>
             </div>
+
+            <!-- Insurance Actions -->
+            <div class="card">
+               <h3>Insurance Options</h3>
+
+               <!-- Buy Insurance -->
+               <fieldset>
+                  <legend>Buy Insurance</legend>
+                  <label for="purchaseInsuranceFlightIdInput">Flight ID:</label>
+                  <input type="number" id="purchaseInsuranceFlightIdInput" placeholder="Insert Flight ID">
+                  <button id="purchaseInsuranceButton">💰 Buy Insurance</button>
+                  <!-- Optional info below button -->
+                  <p id="insuranceBuyStatus"></p>
+               </fieldset>
+
+               <!-- Claim Insurance -->
+               <fieldset>
+                  <legend>Claim Insurance</legend>
+                  <div class="button-group">
+                     <button id="insuranceDetailsButton">Insurance Details</button>
+                     <button id="claimInsuranceButton">✅ Claim Insurance</button>
+                  </div>
+                  <!-- Results will appear below buttons -->
+                  <div id="insuranceDetails"></div>
+               </fieldset>
+            </div>
+
          </div>
       </section>
    </div>
 
-   <script src="app.js"></script> <!-- Ensure this path is correct -->
+   <script src="app.js"></script>
 </body>
 
 </html>
